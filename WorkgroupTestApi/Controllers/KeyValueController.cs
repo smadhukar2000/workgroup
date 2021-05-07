@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using WorkgroupTestApi.Models;
 
 namespace WorkgroupTestApi.Controllers
@@ -32,12 +29,15 @@ namespace WorkgroupTestApi.Controllers
         {
             try
             {
+                if (!Utility.ValidateKey(key))
+                {
+                    return BadRequest($"Invalid Key - {key}, only alphanumeric, hyphen, period, underscore, tilde allowed");
+                }
                 var value = _repository.Get(key);
                 if (value == null)
                 {
                     return NotFound("Value Not Found");
                 }
-
                 return Ok(value);
             }
             catch (Exception ex)
@@ -54,16 +54,18 @@ namespace WorkgroupTestApi.Controllers
 		{
 			try
 			{
-                if (string.IsNullOrWhiteSpace(kv?.Key))
+                if (!Utility.ValidateKey(kv.Key))
 				{
-					return BadRequest();
+					return BadRequest($"Invalid Key - {kv.Key}, only alphanumeric, hyphen, period, underscore, tilde allowed");
 				}
-				
+                if (!Utility.ValidateValue(kv.Value))
+                {
+                    return BadRequest("Invalid Value, MAX 11024 characters allowed");
+                }
+
                 _repository.Create(kv);
 
 				return new CreatedResult(kv.Key, kv);
-
-
 			}
 			catch (Exception ex)
 			{
@@ -79,9 +81,13 @@ namespace WorkgroupTestApi.Controllers
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(kv?.Key))
+                if (!Utility.ValidateKey(kv.Key))
                 {
-                    return BadRequest();
+                    return BadRequest($"Invalid Key - {kv.Key}, only alphanumeric, hyphen, period, underscore, tilde allowed");
+                }
+                if (!Utility.ValidateValue(kv.Value))
+                {
+                    return BadRequest("Invalid Value, MAX 11024 characters allowed");
                 }
                 var result = _repository.Update(kv);
                 if (result == false)
@@ -105,6 +111,10 @@ namespace WorkgroupTestApi.Controllers
         {
             try
             {
+                if (!Utility.ValidateKey(key))
+                {
+                    return BadRequest($"Invalid Key - {key}, only alphanumeric, hyphen, period, underscore, tilde allowed");
+                }
                 var result = _repository.Delete(key);
                 if (result == false)
                 {
