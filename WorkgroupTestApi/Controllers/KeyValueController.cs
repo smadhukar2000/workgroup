@@ -51,40 +51,34 @@ namespace WorkgroupTestApi.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<KeyValue> Create([FromBody]KeyValue kv)
-        {
-            try
-            {
+		{
+			try
+			{
                 if (string.IsNullOrWhiteSpace(kv?.Key))
-                {
-                    return BadRequest();
-                }
-                var response = _repository.Create(kv);
-
-                if (response)
-                {
-                    return new CreatedAtActionResult(nameof(Get), "KeyValue", new { id = kv.Key }, "Key Added Succesfully");
-                }
-				else
 				{
-                    return Ok("Key Already exist, Value Updated");
-                }
+					return BadRequest();
+				}
+				
+                _repository.Create(kv);
 
-            }
-            catch (Exception ex)
-            {
-                return new BadRequestObjectResult(ex.Message);
-            }
-        }
+				return new CreatedResult(kv.Key, kv);
 
-        // PUT api/keyvalue/5
-        [HttpPut("{id}")]
+
+			}
+			catch (Exception ex)
+			{
+				return new BadRequestObjectResult(ex.Message);
+			}
+		}
+
+		// PUT api/keyvalue
+		[HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(KeyValue))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult UpdateArticle([FromBody] KeyValue kv)
+        public IActionResult Update([FromBody] KeyValue kv)
         {
             try
             {
-                // assume id is valid guid
                 if (string.IsNullOrWhiteSpace(kv?.Key))
                 {
                     return BadRequest();
@@ -92,7 +86,7 @@ namespace WorkgroupTestApi.Controllers
                 var result = _repository.Update(kv);
                 if (result == false)
                 {
-                    return NotFound("Article not found");
+                    return NotFound("Value not found");
                 }
 
                 return Ok("Value Updated");
@@ -104,17 +98,17 @@ namespace WorkgroupTestApi.Controllers
         }
 
         // DELETE api/keyvalue/{guid}
-        [HttpDelete("{id}")]
+        [HttpDelete("{key}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(KeyValue))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult DeleteArticle(string key)
+        public IActionResult Delete(string key)
         {
             try
             {
                 var result = _repository.Delete(key);
                 if (result == false)
                 {
-                    return NotFound("Article Not Found");
+                    return NotFound("Value Not Found");
                 }
 
                 return Ok("Deleted Succesfully");

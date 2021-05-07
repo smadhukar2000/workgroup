@@ -7,7 +7,8 @@ namespace WorkgroupTestApi.Models
 {
 	public class Repository : IRepository
 	{
-		static Dictionary<string, string> repository = new Dictionary<string, string>();
+		// Case insensitive dictionary key
+		static Dictionary<string, string> repository = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 		public bool Create(KeyValue kv)
 		{
 			if (repository.ContainsKey(kv.Key))
