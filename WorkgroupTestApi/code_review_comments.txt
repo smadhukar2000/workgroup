@@ -1,0 +1,28 @@
+codereview.cs Review Comments
+--------------------
+
+1) General Finding
+-----
+Code is not compilable, before raising peer review request I think devloper at leaset should check that code is compilable.
+
+
+2) Item_Not_FoundException class
+----------
+Class should provide at least one overloaded constructor, so may return some informative message to caller.
+e.g. 
+public Item_Not_FoundException(string message)
+        : base(message)
+    {
+    }
+
+3) public async Task<T> GetItem(string entity)
+  - ln37 var result = null
+	 type need to be specified explicitly for null assignments e.g. T result = default(T);
+	 
+  - ln 24 public List<T> Items { get; }
+    As we are exposing get method, set method, so its access type should not be public, it should be protected. 
+	
+  - Not all code path return value
+  - There is no await method
+  
+
